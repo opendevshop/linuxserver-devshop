@@ -5,6 +5,8 @@ DEVSHOP_APP_DIR=/app/devshop
 SERVER_HOSTNAME=$(hostname -f)
 ANSIBLE_CONFIG_DIR=/config/devshop/ansible
 
+echo "DEVSHOP | Hello! I am the run script and I am starting now."
+
 mkdir -p \
     /config/devshop
 
@@ -12,20 +14,21 @@ mkdir -p \
 if [ ! -d ${ANSIBLE_CONFIG_DIR} ]; then
     cp -rf /defaults/ansible ${ANSIBLE_CONFIG_DIR}
 fi
-if [ ! -f /etc/ansible ]; then
+if [ ! -d /etc/ansible ]; then
     ln -sf ${ANSIBLE_CONFIG_DIR} /etc/ansible
 fi
 
 echo "Preparing config for DevShop Server: ${SERVER_HOSTNAME}"
-mkdir -p /etc/ansible/hostvars/${SERVER_HOSTNAME}
-if [ ! -f ${ANSIBLE_CONFIG_DIR}/hostvars/{$SERVER_HOSTNAME}/secrets.yml ]; then
-    cat > ${ANSIBLE_CONFIG_DIR}/hostvars/{$SERVER_HOSTNAME}/secrets.yml <<EOT
-devshop_host_hostname: $SERVER_HOSTNAME 
+HOSTVARS_DIR="/etc/ansible/hostvars/${SERVER_HOSTNAME}"
+
+mkdir -p $HOSTVARS_DIR
+if [ ! -f "$HOSTVARS_DIR/secrets.yml" ]; then
+    cat > "$HOSTVARS_DIR/secrets.yml" <<EOT
 mysql_root_password: '$(tr -dc 'a-zA-Z0-9~!@#$%^&*_()+}{?></";.,[]=-' </dev/urandom | fold -w 32 | head -n 1)'
 EOT
 fi
-if [ ! -f ${ANSIBLE_CONFIG_DIR}/hostvars/{$SERVER_HOSTNAME}/vars.yml ]; then
-    cat > ${ANSIBLE_CONFIG_DIR}/hostvars/{$SERVER_HOSTNAME}/vars.yml <<EOT
+if [ ! -f "$HOSTVARS_DIR/vars.yml" ]; then
+    cat > "$HOSTVARS_DIR/vars.yml" <<EOT
 devshop_host_hostname: $SERVER_HOSTNAME 
 EOT
 fi
@@ -36,9 +39,11 @@ if [ ! -d ${ANSIBLE_CONFIG_DIR} ]; then
     cp -rf /defaults/ansible ${ANSIBLE_CONFIG_DIR}
 fi
 
-# Install prereqs
+ansible --version
 
-# permissions
-lsiown -R abc:abc \
-    /config \
-    /app/www/public/tmp
+
+#
+## permissions
+#lsiown -R abc:abc \
+#    /config \
+#    /app/www/public/tmp
