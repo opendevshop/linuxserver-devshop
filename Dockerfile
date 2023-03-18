@@ -18,6 +18,7 @@ ARG DEVSHOP_PLATFORM_PATH
 ENV DEVSHOP_PLATFORM_REPOSITORY https://github.com/opendevshop/devshop.platform.git
 ENV DEVSHOP_PLATFORM_PATH /app/devshop/platform
 ENV DEVSHOP_PLATFORM_PREPARE_SCRIPT $DEVSHOP_PLATFORM_PATH/scripts/build/prepare-ubuntu2004.sh
+ENV ANSIBLE_PLAYBOOK /app/devshop/platform/playbook.yml
 
 # linuxserver
 RUN echo Installing $DEVSHOP_VERSION from $DEVSHOP_PLATFORM_REPOSITORY
