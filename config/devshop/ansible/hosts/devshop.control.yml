@@ -1,0 +1,37 @@
+---
+# Put sites in "apps" group to tell devshop.platform collection that these hosts are App Hosts.
+apps:
+  children:
+
+    # Use Ansible Groups to link sites together and provide defaults, similar to a "Project".
+    devshop:
+      vars:
+        # Vars in an app's group are set as defaults for all hosts in the group.
+        devshop_app_git_repository: git@github.com:opendevshop/devshop.git
+        devshop_app_git_document_root: src/DevShop/Control
+        devshop_app_name: devshop
+        devshop_app_git_root: "{{ devshop_host_apps_root }}/{{ devshop_app_name }}/{{ devshop_app_environment }}"
+
+        # Assign this site to Server hosts.
+        devshop_app_host: devshop.local.computer
+        devshop_app_server_http: devshop.local.computer
+        devshop_app_server_db: devshop.local.computer
+
+      hosts:
+
+        # Add the variables you want to override for each environment.
+        control.local.computer:
+          devshop_app_git_reference: bugs/contrib 
+          devshop_app_environment: live
+
+        
+
+# Add servers to service groups to configure them with appropriate roles.
+servers:
+  children:
+    http:
+      hosts:
+        devshop.local.computer:
+    db:
+      hosts:
+        devshop.local.computer:
